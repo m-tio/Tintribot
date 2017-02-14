@@ -152,7 +152,7 @@ def get_vms(vmstore, session_id):
     count = 1
     vm_paginated_result = {'live' : "TRUE",
                            'next' : "offset=0&limit=" + str(page_size)}
-    
+
     # While there are more VMs, go get them
     while 'next' in vm_paginated_result:
         url = get_vm_url + "?" + vm_paginated_result['next']
@@ -164,12 +164,12 @@ def get_vms(vmstore, session_id):
             print_debug("Fixing URL")
 
         print_debug("Next GET VM URL: " + str(count) + ": " + url)
-    
+
         # Invoke the API
         ret = tintri.api_get(vmstore, url, session_id)
         print_debug("The JSON response of the get invoke to the server " +
                     vmstore + " is: " + ret.text)
-        
+
         # if HTTP Response is not 200 then raise an error
         if ret.status_code != 200:
             print_error("The HTTP response for the get invoke to the server " +
@@ -178,10 +178,10 @@ def get_vms(vmstore, session_id):
             print_error("response: " + ret.text)
             tintri.api_logout(vmstore, session_id)
             sys.exit(-10)
-    
+
         # For each VM in the page, print the VM name and UUID.
         vm_paginated_result = ret.json()
-    
+
         # Check for the first time through the loop and
         # print the total number of VMs.
         if count == 1:
@@ -190,7 +190,7 @@ def get_vms(vmstore, session_id):
                 print_error("No VMs present")
                 tintri.api_logout(vmstore, session_id)
                 sys_exit(-99)
-    
+
         # Get and store the VM items and save in a VM object.
         items = vm_paginated_result["items"]
         for vm in items:
@@ -206,7 +206,7 @@ def get_vms(vmstore, session_id):
 
 
 def create_vmstats_table(vms, vmname=None):
-    
+
     if vmname is None or re.compile(vmname, re.IGNORECASE) == 'all':
         vmname = '.'
 
@@ -373,6 +373,46 @@ def create_alerts_notices_table(alerts_notices):
 
     elif number_of_alerts_notices == 0:
         print_info("No Inbox-ed Alerts present")
+
+    # Return the table
+    return table
+
+def get_snapshot(vmstore,session_id):
+    # Get snapshot info
+    url = "/v310/snapshot"
+    ret = get_info(vmstore, session_id, url)
+
+    return ret
+
+def create_snapshot_table(snapshot_notices):
+    # Number of items to display within bot
+    number_of_items_to_display_on_bot = 20
+
+    # get the total number of snapshots
+    number_of_snapshot_notices = int(snapshot_notices["filteredTotal"])
+
+    # Create the table header with nesessary fields
+    table_header = ['No.', 'lastUpdatedTime', 'vmName', 'description', 'sizeChangedMB', 'sizeChangedPhysicalMB']
+    table = PrettyTable(table_header)
+    table.align["lastUpdatedTime"] = "l"
+    table.align["VM-Name"] = "l"
+    table.align["description"] = "l"
+    table.align["sizeChangedMB"] = "l"
+    table.align["sizeChangedPhysicalMB"] = "l"
+
+    if number_of_snapshot_notices > number_of_items_to_display_on_bot:
+        items = snapshot_notices["items"]
+        for count in range(0,number_of_items_to_display_on_bot):
+            row = [str(count+1), items[count]["lastUpdatedTime"], items[count]["vmName"], items[count]["description"], items[count]["sizeChangedMB"], items[count]["sizeChangedPhysicalMB"]]
+            table.add_row(row)
+
+    elif number_of_snapshot_notices > 0 and number_of_snapshot_notices < number_of_items_to_display_on_bot:
+        items = snapshot_notices["items"]
+        row = (str(1), items[0]["lastUpdatedTime"], items[0]["vmName"], items[0]["description"], items[0]["sizeChangedMB"], items[0]["sizeChangedPhysicalMB"])
+        table.add_row(row)
+
+    elif number_of_snapshot_notices == 0:
+        print_info("No Snapshots present")
 
     # Return the table
     return table

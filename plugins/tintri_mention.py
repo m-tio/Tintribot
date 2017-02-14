@@ -61,9 +61,10 @@ def get_info(args):
                      '@botname:tintri [TintriHostName] show vmlist... Show vm list in VMStore.\n'
                      '@botname:tintri [TintriHostName] show vmlist search [VMName(Regular expression)]... Show vm list of [VMName] in VMStore.\n'
                      '\n'
+                     '@botname:tintri [TintriHostName] show snapshot... Show a list of snapshots.\n'
                      '@botname:tintri [TintriHostName] {command} help... Show {command} help.\n')
 
-    m = re.compile('help|appliance_info|dashboard|alert|vmlist', re.I).search(args[3])
+    m = re.compile('help|appliance_info|dashboard|alert|vmlist|snapshot', re.I).search(args[3])
 
     com = None
     if m:
@@ -110,6 +111,12 @@ def get_info(args):
 
         # Logout
         tintri_op.tintri_logout(vmstore[1], session_id)
+
+    elif com == 'snapshot':
+        # get snapshots and notices
+            snapshot_notices = tintri_op.get_snapshot(vmstore[1], session_id)
+            # create snapshot and notices table
+            table = tintri_op.create_snapshot_table(snapshot_notices)
 
     if table:
         ret = '\n```' + str(table) + '```'
