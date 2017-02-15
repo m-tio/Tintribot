@@ -368,8 +368,9 @@ def create_alerts_notices_table(alerts_notices):
 
     elif number_of_alerts_notices > 0 and number_of_alerts_notices < number_of_items_to_display_on_bot:
         items = alerts_notices["items"]
-        row = (str(1), items[0]["lastUpdatedTime"], items[0]["severity"], items[0]["comment"], items[0]["message"])
-        table.add_row(row)
+        for count in range(0, number_of_alerts_notices):
+            row = [str(count+1), items[count]["lastUpdatedTime"], items[count]["severity"], items[count]["comment"], items[count]["message"]]
+            table.add_row(row)
 
     elif number_of_alerts_notices == 0:
         print_info("No Inbox-ed Alerts present")
@@ -408,8 +409,9 @@ def create_snapshot_table(snapshot_notices):
 
     elif number_of_snapshot_notices > 0 and number_of_snapshot_notices < number_of_items_to_display_on_bot:
         items = snapshot_notices["items"]
-        row = (str(1), items[0]["lastUpdatedTime"], items[0]["vmName"], items[0]["description"], items[0]["sizeChangedMB"], items[0]["sizeChangedPhysicalMB"])
-        table.add_row(row)
+        for count in range(0, number_of_snapshot_notices):
+            row = [str(count+1), items[count]["lastUpdatedTime"], items[count]["vmName"], items[count]["description"], items[count]["sizeChangedMB"], items[count]["sizeChangedPhysicalMB"]]
+            table.add_row(row)
 
     elif number_of_snapshot_notices == 0:
         print_info("No Snapshots present")

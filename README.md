@@ -35,6 +35,9 @@ This is a bot that operaiton [Tintri](https://www.tintri.com/) VMstore storage.
  Show alerts and notices.  
  `tintri [VMStore-Name] show alert`
 
+ Show snapshot in VMStore.  
+ `tintri [VMStore-Name] show snapshot`
+
  Show vm list in VMStore.  
  `tintri [VMStore-Name] show vmlist`
   
